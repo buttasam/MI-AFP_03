@@ -111,9 +111,10 @@ geometricSequence :: Num b => b -> b -> [b]
 geometricSequence a r = subseq a r 1
                       where subseq a r n = a * n : subseq a r (r*n)
 
--- TODO: implement infinite list of primes [2, 3, 5, 7, 11, ...]
 primes :: [Integer]
-primes = undefined
+primes = filterPrimes [2,3 ..]
+  where
+    filterPrimes (p:rest) = p : filterPrimes [x|x <- rest, mod x p > 0]
 
 -- TODO: implement list of prime factors for given number (use primes list)
 factorization :: Integer -> [Integer]
