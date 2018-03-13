@@ -31,9 +31,35 @@ data Person = Person { pFirstname     :: String
 -- | https://www.muni.cz/o-univerzite/uredni-deska/oslovovani-akademickych-pracovniku
 -- | http://www.etiketavse.estranky.cz/clanky/etiketa/4.-oslovovani-a-spolecenska-vyznamnost.html
 -- | http://www.studenta.cz/vysokoskolske-tituly-jak-oslovovat-na-akademicke-pude/magazin/article/587
--- TODO: implement czech salutation which passes the tests
 czechSalutation :: Person -> String
-czechSalutation = undefined
+czechSalutation p = genderSalutation p ++ titleSalutation p ++ nameSalutation p
+
+genderSalutation :: Person -> String
+genderSalutation (Person _ _ gender status age titles)
+                 | age < 15 = ""
+                 | age < 25 && gender == Female && status == Single && titles == [] = "slečna "
+                 | gender == Male = "pan "
+                 | gender == Female = "paní "
+
+titleSalutation :: Person -> String
+titleSalutation (Person firstname lastname gender status age titles)
+                 | titles == [] = ""
+                 | title == Prof && gender == Male = "profesor "
+                 | title == Prof && gender == Female = "profesorka "
+                 | title == Doc && gender == Male = "docent "
+                 | title == Doc && gender == Female = "docentka "
+                 | elem title [PhD, MUDr, PhDr] && gender == Male = "doktor "
+                 | elem title [PhD, MUDr, PhDr] && Female == Female = "doktorka "
+                 | title == Mgr && gender == Male = "magistr "
+                 | title == Mgr && gender == Female = "magistra "
+                 | otherwise = ""
+                 where title = last titles
+
+
+nameSalutation :: Person -> String
+nameSalutation (Person firstname lastname _ _ age _)
+                 | age < 15 = firstname
+                 | otherwise = (firstname ++ " " ++ lastname)
 
 -------------------------------------------------------------------------------
 -- DO NOT EDIT DATA TYPE!
