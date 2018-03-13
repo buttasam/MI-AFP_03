@@ -107,10 +107,9 @@ shapeArea (Triangle triSideA triSideB triSideC) = sqrt (s*(s - triSideA) * (s - 
 -------------------------------------------------------------------------------
 -- | Geometric sequence as infinite list
 -- | https://en.wikipedia.org/wiki/Geometric_progression
--- TODO: implement geometric series
 geometricSequence :: Num b => b -> b -> [b]
-geometricSequence a r = undefined
-
+geometricSequence a r = subseq a r 1
+                      where subseq a r n = a * n : subseq a r (r*n)
 
 -- TODO: implement infinite list of primes [2, 3, 5, 7, 11, ...]
 primes :: [Integer]
