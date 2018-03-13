@@ -49,7 +49,7 @@ titleSalutation (Person firstname lastname gender status age titles)
                  | title == Doc && gender == Male = "docent "
                  | title == Doc && gender == Female = "docentka "
                  | elem title [PhD, MUDr, PhDr] && gender == Male = "doktor "
-                 | elem title [PhD, MUDr, PhDr] && Female == Female = "doktorka "
+                 | elem title [PhD, MUDr, PhDr] && gender == Female = "doktorka "
                  | title == Mgr && gender == Male = "magistr "
                  | title == Mgr && gender == Female = "magistra "
                  | otherwise = ""
@@ -92,14 +92,18 @@ data Shape2D = Circle { ciRadius :: Double }
              | Triangle { triSideA :: Double, triSideB :: Double, triSideC :: Double }
              deriving (Show, Read, Eq)
 
--- TODO: implement circumference calculation for 2D shapes
 shapeCircumference :: Shape2D -> Double
-shapeCircumference = undefined
+shapeCircumference (Circle ciRadius) = 2 * pi * ciRadius
+shapeCircumference (Square sqSide) = 4 * sqSide
+shapeCircumference (Rectangle reWidth reHeight) = 2 * (reWidth + reHeight)
+shapeCircumference (Triangle triSideA triSideB triSideC) = triSideA + triSideB + triSideC
 
--- TODO: implement area calculation for 2D shapes
 shapeArea :: Shape2D -> Double
-shapeArea = undefined
-
+shapeArea (Circle ciRadius) = pi * ciRadius * ciRadius
+shapeArea (Square sqSide) = sqSide * sqSide
+shapeArea (Rectangle reWidth reHeight) = reWidth * reHeight
+shapeArea (Triangle triSideA triSideB triSideC) = sqrt (s*(s - triSideA) * (s - triSideB) * (s - triSideC))
+                                                         where s = (triSideA + triSideB + triSideC) / 2
 -------------------------------------------------------------------------------
 -- | Geometric sequence as infinite list
 -- | https://en.wikipedia.org/wiki/Geometric_progression
