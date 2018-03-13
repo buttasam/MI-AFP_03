@@ -1,5 +1,8 @@
 module Lib where
 
+import qualified Data.DummyList.Examples
+import qualified Data.MyString.Examples
+
 -------------------------------------------------------------------------------
 -- DO NOT EDIT DATA TYPES!
 data MaritalStatus = Single | Married | Widowed
@@ -130,9 +133,6 @@ phi = undefined
 -------------------------------------------------------------------------------
 -- !!! DO NOT COPY, JUST IMPORT (avoid conflicts, pick the best option for you)
 -- iii visit the content of modules
--- TODO: replace undefined with "example1" from Data.DummyList.Examples module
-dummyListExample1 = undefined
--- TODO: replace undefined with "example2" from Data.MyString.Examples module
-stringExample2 = undefined
--- TODO: replace undefined with "example3" from Data.MyString.Examples module
-stringExample3 = undefined
+dummyListExample1 = Data.DummyList.Examples.example1
+stringExample2 = Data.MyString.Examples.example2
+stringExample3 = Data.MyString.Examples.example3
