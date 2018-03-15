@@ -115,14 +115,17 @@ geometricSequence a r = subseq a r 1
                       where subseq a r n = a * n : subseq a r (r*n)
 
 primes :: [Integer]
-primes = filterPrimes [2,3 ..]
+primes = filterPrimes (2:[3,5 ..])
   where
     filterPrimes (p:rest) = p : filterPrimes [x|x <- rest, mod x p > 0]
 
 factorization :: Integer -> [Integer]
-factorization n = extendPrimes n uniqueFactorization
-                where uniqueFactorization = filter (lessAndDiv) (take (fromInteger n) primes)
-                                           where lessAndDiv a = a <= n && mod n a == 0
+factorization n = extendPrimes n (uniqueFactorization n)
+
+uniqueFactorization :: Integer -> [Integer]
+uniqueFactorization n = filter (lessAndDiv) (take (fromInteger n) primes)
+                      where lessAndDiv a = a <= n && mod n a == 0
+
 extendPrimes :: Integer -> [Integer] -> [Integer]
 extendPrimes n [] = []
 extendPrimes n (p:xs)
@@ -132,10 +135,14 @@ extendPrimes n (p:xs)
 
 -- | Euler's totient function
 -- | https://en.wikipedia.org/wiki/Euler%27s_totient_function
--- TODO: implement phi(n) by using search in primes & factorization
 phi :: Integer -> Integer
-phi = undefined
-
+phi 0 = 0
+phi 1 = 1
+phi n = round (product ((map eulerFraction primeslist)) * fromInteger (abs n))
+       where
+             primeslist = (uniqueFactorization (abs n))
+             eulerFraction :: Integer -> Double
+             eulerFraction p = 1 - ( 1 / fromInteger p)
 -------------------------------------------------------------------------------
 -- !!! DO NOT COPY, JUST IMPORT (avoid conflicts, pick the best option for you)
 -- iii visit the content of modules
