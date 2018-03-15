@@ -83,9 +83,22 @@ data AllensIAlgebraRelation a = (a, a) `Equals`   (a, a) -- X = Y
 -- | Compare two intervals given as tuples and return appropriate
 -- | Allen's Interval Algebra relation between them
 -- | It assumes that for (x, y) is always x <= y
--- TODO: implement Allen's algebra relation detection of intervals
 allensComparison :: Ord a => (a, a) -> (a, a) -> AllensIAlgebraRelation a
-allensComparison = undefined
+allensComparison first second
+                   | a == c && b == d = Equals left right
+                   | b == c = Meets left right
+                   | a == c = if snd first < snd second then Starts right left else Starts left right
+                   | b == d = Finishes right left
+                   | a < c &&  b < d  && b < c = Before left right
+                   | a < b && b > d = During right left
+                   | b > c = Overlaps left right
+                  where
+                      left = if (fst first) < (fst second) then first else second
+                      right = if (fst first) < (fst second) then second else first
+                      a = fst left
+                      b = snd left
+                      c = fst right
+                      d = snd right
 
 -------------------------------------------------------------------------------
 -- DO NOT EDIT DATA TYPE!
