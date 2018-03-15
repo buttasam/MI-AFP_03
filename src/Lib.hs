@@ -119,10 +119,16 @@ primes = filterPrimes [2,3 ..]
   where
     filterPrimes (p:rest) = p : filterPrimes [x|x <- rest, mod x p > 0]
 
--- TODO: implement list of prime factors for given number (use primes list)
 factorization :: Integer -> [Integer]
-factorization = undefined
-
+factorization n = extendPrimes n uniqueFactorization
+                where uniqueFactorization = filter (lessAndDiv) (take (fromInteger n) primes)
+                                           where lessAndDiv a = a <= n && mod n a == 0
+extendPrimes :: Integer -> [Integer] -> [Integer]
+extendPrimes n [] = []
+extendPrimes n (p:xs)
+              | mod nNext p == 0 = p : extendPrimes nNext (p:xs)
+              | otherwise = p : extendPrimes nNext (xs)
+              where nNext = div n p
 
 -- | Euler's totient function
 -- | https://en.wikipedia.org/wiki/Euler%27s_totient_function
