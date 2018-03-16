@@ -1,5 +1,9 @@
 module Lib where
 
+import qualified Data.DummyList.Examples
+import qualified Data.MyString.Examples
+import qualified Data.List
+
 -------------------------------------------------------------------------------
 -- DO NOT EDIT DATA TYPES!
 data MaritalStatus = Single | Married | Widowed
@@ -31,9 +35,35 @@ data Person = Person { pFirstname     :: String
 -- | https://www.muni.cz/o-univerzite/uredni-deska/oslovovani-akademickych-pracovniku
 -- | http://www.etiketavse.estranky.cz/clanky/etiketa/4.-oslovovani-a-spolecenska-vyznamnost.html
 -- | http://www.studenta.cz/vysokoskolske-tituly-jak-oslovovat-na-akademicke-pude/magazin/article/587
--- TODO: implement czech salutation which passes the tests
 czechSalutation :: Person -> String
-czechSalutation = undefined
+czechSalutation p = genderSalutation p ++ titleSalutation p ++ nameSalutation p
+
+genderSalutation :: Person -> String
+genderSalutation (Person _ _ gender status age titles)
+                 | age < 15 = ""
+                 | age < 25 && gender == Female && status == Single && titles == [] = "slečna "
+                 | gender == Male = "pan "
+                 | gender == Female = "paní "
+
+titleSalutation :: Person -> String
+titleSalutation (Person firstname lastname gender status age titles)
+                 | titles == [] = ""
+                 | title == Prof && gender == Male = "profesor "
+                 | title == Prof && gender == Female = "profesorka "
+                 | title == Doc && gender == Male = "docent "
+                 | title == Doc && gender == Female = "docentka "
+                 | elem title [PhD, MUDr, PhDr] && gender == Male = "doktor "
+                 | elem title [PhD, MUDr, PhDr] && gender == Female = "doktorka "
+                 | title == Mgr && gender == Male = "magistr "
+                 | title == Mgr && gender == Female = "magistra "
+                 | otherwise = ""
+                 where title = last titles
+
+
+nameSalutation :: Person -> String
+nameSalutation (Person firstname lastname _ _ age _)
+                 | age < 15 = firstname
+                 | otherwise = (firstname ++ " " ++ lastname)
 
 -------------------------------------------------------------------------------
 -- DO NOT EDIT DATA TYPE!
@@ -54,9 +84,22 @@ data AllensIAlgebraRelation a = (a, a) `Equals`   (a, a) -- X = Y
 -- | Compare two intervals given as tuples and return appropriate
 -- | Allen's Interval Algebra relation between them
 -- | It assumes that for (x, y) is always x <= y
--- TODO: implement Allen's algebra relation detection of intervals
 allensComparison :: Ord a => (a, a) -> (a, a) -> AllensIAlgebraRelation a
-allensComparison = undefined
+allensComparison first second
+                   | a == c && b == d = Equals left right
+                   | b == c = Meets left right
+                   | a == c = if snd first < snd second then Starts right left else Starts left right
+                   | b == d = Finishes right left
+                   | a < c &&  b < d  && b < c = Before left right
+                   | a < b && b > d = During right left
+                   | b > c = Overlaps left right
+                  where
+                      left = if (fst first) < (fst second) then first else second
+                      right = if (fst first) < (fst second) then second else first
+                      a = fst left
+                      b = snd left
+                      c = fst right
+                      d = snd right
 
 -------------------------------------------------------------------------------
 -- DO NOT EDIT DATA TYPE!
@@ -66,43 +109,56 @@ data Shape2D = Circle { ciRadius :: Double }
              | Triangle { triSideA :: Double, triSideB :: Double, triSideC :: Double }
              deriving (Show, Read, Eq)
 
--- TODO: implement circumference calculation for 2D shapes
 shapeCircumference :: Shape2D -> Double
-shapeCircumference = undefined
+shapeCircumference (Circle ciRadius) = 2 * pi * ciRadius
+shapeCircumference (Square sqSide) = 4 * sqSide
+shapeCircumference (Rectangle reWidth reHeight) = 2 * (reWidth + reHeight)
+shapeCircumference (Triangle triSideA triSideB triSideC) = triSideA + triSideB + triSideC
 
--- TODO: implement area calculation for 2D shapes
 shapeArea :: Shape2D -> Double
-shapeArea = undefined
-
+shapeArea (Circle ciRadius) = pi * ciRadius * ciRadius
+shapeArea (Square sqSide) = sqSide * sqSide
+shapeArea (Rectangle reWidth reHeight) = reWidth * reHeight
+shapeArea (Triangle triSideA triSideB triSideC) = sqrt (s*(s - triSideA) * (s - triSideB) * (s - triSideC))
+                                                         where s = (triSideA + triSideB + triSideC) / 2
 -------------------------------------------------------------------------------
 -- | Geometric sequence as infinite list
 -- | https://en.wikipedia.org/wiki/Geometric_progression
--- TODO: implement geometric series
 geometricSequence :: Num b => b -> b -> [b]
-geometricSequence a r = undefined
+geometricSequence a r = subseq a r 1
+                      where subseq a r n = a * n : subseq a r (r*n)
 
-
--- TODO: implement infinite list of primes [2, 3, 5, 7, 11, ...]
 primes :: [Integer]
-primes = undefined
+primes = filterPrimes (2:[3,5 ..])
+  where
+    filterPrimes (p:rest) = p : filterPrimes [x|x <- rest, mod x p > 0]
 
--- TODO: implement list of prime factors for given number (use primes list)
 factorization :: Integer -> [Integer]
-factorization = undefined
+factorization n = factorForPos n startPosition
+                 where startPosition = 0
+
+factorForPos n position
+    | n <= 1 = []
+    | mod n curPrime == 0 = [curPrime] ++ (factorForPos nextPrime position)
+    | otherwise = factorForPos n (position + 1)
+        where
+            nextPrime = n `div` curPrime
+            curPrime = primes !! position
 
 
 -- | Euler's totient function
 -- | https://en.wikipedia.org/wiki/Euler%27s_totient_function
--- TODO: implement phi(n) by using search in primes & factorization
 phi :: Integer -> Integer
-phi = undefined
-
+phi 0 = 0
+phi 1 = 1
+phi n = round (product ((map eulerFraction primeslist)) * fromInteger (abs n))
+       where
+             primeslist = (Data.List.nub (factorization (abs n)))
+             eulerFraction :: Integer -> Double
+             eulerFraction p = 1 - ( 1 / fromInteger p)
 -------------------------------------------------------------------------------
 -- !!! DO NOT COPY, JUST IMPORT (avoid conflicts, pick the best option for you)
 -- iii visit the content of modules
--- TODO: replace undefined with "example1" from Data.DummyList.Examples module
-dummyListExample1 = undefined
--- TODO: replace undefined with "example2" from Data.MyString.Examples module
-stringExample2 = undefined
--- TODO: replace undefined with "example3" from Data.MyString.Examples module
-stringExample3 = undefined
+dummyListExample1 = Data.DummyList.Examples.example1
+stringExample2 = Data.MyString.Examples.example2
+stringExample3 = Data.MyString.Examples.example3
