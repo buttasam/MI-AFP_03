@@ -2,6 +2,7 @@ module Lib where
 
 import qualified Data.DummyList.Examples
 import qualified Data.MyString.Examples
+import qualified Data.List
 
 -------------------------------------------------------------------------------
 -- DO NOT EDIT DATA TYPES!
@@ -133,18 +134,17 @@ primes = filterPrimes (2:[3,5 ..])
     filterPrimes (p:rest) = p : filterPrimes [x|x <- rest, mod x p > 0]
 
 factorization :: Integer -> [Integer]
-factorization n = extendPrimes n (uniqueFactorization n)
+factorization n = factorForPos n startPosition
+                 where startPosition = 0
 
-uniqueFactorization :: Integer -> [Integer]
-uniqueFactorization n = filter (lessAndDiv) (take (fromInteger n) primes)
-                      where lessAndDiv a = a <= n && mod n a == 0
+factorForPos n position
+    | n <= 1 = []
+    | mod n curPrime == 0 = [curPrime] ++ (factorForPos nextPrime position)
+    | otherwise = factorForPos n (position + 1)
+        where
+            nextPrime = n `div` curPrime
+            curPrime = primes !! position
 
-extendPrimes :: Integer -> [Integer] -> [Integer]
-extendPrimes n [] = []
-extendPrimes n (p:xs)
-              | mod nNext p == 0 = p : extendPrimes nNext (p:xs)
-              | otherwise = p : extendPrimes nNext (xs)
-              where nNext = div n p
 
 -- | Euler's totient function
 -- | https://en.wikipedia.org/wiki/Euler%27s_totient_function
@@ -153,7 +153,7 @@ phi 0 = 0
 phi 1 = 1
 phi n = round (product ((map eulerFraction primeslist)) * fromInteger (abs n))
        where
-             primeslist = (uniqueFactorization (abs n))
+             primeslist = (Data.List.nub (factorization (abs n)))
              eulerFraction :: Integer -> Double
              eulerFraction p = 1 - ( 1 / fromInteger p)
 -------------------------------------------------------------------------------
